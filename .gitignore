@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+venv/
+
+.DS_Store
+
+.env
+
+Resume/Resume_cleaned.csv
+data/
+
+.streamlit/
