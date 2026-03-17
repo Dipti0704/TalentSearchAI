@@ -5,6 +5,7 @@ from src.embed import embed_text
 from src.pinecone_client import ensure_index, get_index
 from src.docx_parser import extract_text_from_docx
 from src.tools import classify_resume_category
+from src.chunker import chunk_text
 
 RESUME_FOLDER = "resumes"
 
@@ -37,21 +38,23 @@ def ingest_resumes():
 
         print("Generating embedding...")
 
-        vector = embed_text(text)
+        chunks = chunk_text(text)
 
-        print("Upserting vector for:", file)
+        for i, chunk in enumerate(chunks):
 
-        index.upsert([
-            {
-                "id": file,
-                "values": vector,
-                "metadata": {
-                    "text": text,
-                    "file_name": file,
-                    "category": category
+            vector = embed_text(chunk)
+
+            index.upsert([
+                {
+                    "id": f"{file}_chunk_{i}",
+                    "values": vector,
+                    "metadata": {
+                        "text": chunk,
+                        "file_name": file,
+                        "category": category
+                    }
                 }
-            }
-        ])
+            ])
 
 
 if __name__ == "__main__":
