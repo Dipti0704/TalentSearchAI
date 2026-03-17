@@ -1,11 +1,10 @@
 from src.query_pipeline import retrieve_resumes
+from src.llm import generate_answer
 
-query = "data science engineer"
+query = "Find machine learning engineers"
 
-results = retrieve_resumes(query)
+resumes = retrieve_resumes(query)
 
-for r in results:
-    print("\nResume:", r["file_name"])
-    print("Score:", r["score"])
-    print("Category:", r["category"])
-    print(r["text"][:200])
+answer = generate_answer(query, resumes)
+
+print(answer)
