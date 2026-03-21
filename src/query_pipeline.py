@@ -23,7 +23,7 @@ def retrieve_resumes(query: str, top_k: int = 5):
         resumes.append({
             "score": match["score"],
             "text": match["metadata"]["text"],
-            "file_name": match["metadata"]["file_name"],
+            "file_name": match["metadata"].get("name"),
             "name": match["metadata"].get("name"),
             "email": match["metadata"].get("email"),
             "resume_link": match["metadata"].get("resume_link"),

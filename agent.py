@@ -59,24 +59,34 @@ def shortlist_candidates(top_k):
 SYSTEM_PROMPT = """
 You are an AI recruiter assistant.
 
-Your job:
-- Help find, analyze, and shortlist candidates.
-- Use tools when needed.
+You MUST respond ONLY in JSON format when performing actions.
 
-STRICT RULES:
-- Only answer hiring/candidate related queries.
-- If unrelated → say: "I can only assist with hiring-related queries."
-- Always prefer calling tools when action is needed.
+Available tools:
 
-TOOLS AVAILABLE:
-1. search_candidates(query)
-2. get_resume(index)
-3. shortlist_candidates(top_k)
+1. search_candidates
+   args: { "query": string }
 
-IMPORTANT:
-- If user asks for candidates → call search_candidates
-- If user asks to see resume → call get_resume
+2. get_resume
+   args: { "index": number }
+
+3. shortlist_candidates
+   args: { "top_k": number }
+
+Rules:
+- If user asks to find candidates → call search_candidates
+- If user asks for resume → call get_resume
 - If user asks to shortlist → call shortlist_candidates
+
+STRICT:
+- Output ONLY JSON
+- No explanation
+- No text outside JSON
+
+Example:
+{
+  "tool": "search_candidates",
+  "args": { "query": "machine learning engineer" }
+}
 """
 
 
@@ -97,12 +107,19 @@ def handle_query(user_query):
     )
 
     reply = response.choices[0].message.content
+    
+    print("LLM RAW RESPONSE:", reply)
+
 
     # Try parsing tool call
     try:
         tool_call = json.loads(reply)
     except:
-        return reply
+        print("⚠️ JSON parse failed, fallback triggered")
+
+        # 🔥 FORCE SEARCH (important)
+        result = search_candidates(user_query)
+        return format_candidates(result)
 
     tool = tool_call.get("tool")
     args = tool_call.get("args", {})
@@ -117,6 +134,7 @@ def handle_query(user_query):
 
     elif tool == "shortlist_candidates":
         return shortlist_candidates(args.get("top_k", 3))
+    
 
     return reply
 
@@ -148,3 +166,4 @@ def set_job_description(jd):
     
 def get_last_candidates():
     return memory["last_results"]
+
