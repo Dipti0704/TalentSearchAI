@@ -8,6 +8,9 @@ credentials.json
 
 .env
 
+logs.txt
+
+
 Resume/Resume_cleaned.csv
 data/
 

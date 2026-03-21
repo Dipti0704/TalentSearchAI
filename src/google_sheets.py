@@ -38,6 +38,9 @@ def map_columns(headers):
 
         elif "resume" in h_lower:
             mapping["resume"] = h
+            
+        elif "drive" in h_lower or "resume" in h_lower:
+            mapping["resume"] = h
 
     return mapping
 

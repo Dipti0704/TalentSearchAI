@@ -7,7 +7,7 @@ client = OpenAI()
 def score_candidate(query, resume_text):
 
     prompt = f"""
-You are a recruiter AI.
+You are a strict recruiter AI.
 
 Job Requirement:
 {query}
@@ -15,9 +15,14 @@ Job Requirement:
 Candidate Resume:
 {resume_text}
 
-Give a match score between 0 and 100.
+Instructions:
+- Score between 0 to 100
+- DO NOT give same scores to multiple candidates
+- Use full range (50–95)
+- Be highly discriminative
+- Compare depth of skills, projects, and relevance
 
-Only return the number.
+Return ONLY a number.
 """
 
     response = client.chat.completions.create(

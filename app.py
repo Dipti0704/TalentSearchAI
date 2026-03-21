@@ -48,29 +48,34 @@ candidates = get_last_candidates()
 
 if candidates:
 
-    for i, c in enumerate(candidates[:10]):
+    from src.explainer import generate_highlights
 
-        col1, col2, col3, col4 = st.columns([2, 1, 2, 1])
+    for i, c in enumerate(candidates):
 
-        with col1:
-            st.write(f"**{i+1}. {c['file_name']}**")
+        with st.container():
+            st.markdown(f"## {i+1}. {c['file_name']}")
+            st.write(f" Score: {c['score']}")
 
-        with col2:
-            st.write(f"Score: {c['score']}")
+            # Resume link
+            if c.get("resume_link"):
+                st.markdown(f"[ Open Resume]({c['resume_link']})")
+            else:
+                st.write("No resume link")
 
-        with col3:
-            st.write(c.get("resume_link", "No link"))
+            # 🔥 Highlights
+            highlights = c.get("highlights", [])
 
-        with col4:
-            if st.button(f"Shortlist {i}", key=i):
+            st.markdown("### 🔥 Strong Points")
+            for point in highlights:
+                st.markdown(f"- {point}")
+
+            # Shortlist button
+            if st.button(f"Shortlist {i}", key=f"s{i}"):
                 from src.sheet_highlighter import highlight_candidate
-                if c.get("email"):
-                    highlight_candidate(c["email"])
-                    st.success(f"{c['file_name']} shortlisted!")
+                highlight_candidate(c["email"])
+                st.success("Shortlisted!")
 
-else:
-    st.info("No candidates yet. Run a search.")
-
+            st.divider()                    
 # ---------------- BULK SHORTLIST ---------------- #
 
 st.divider()

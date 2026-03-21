@@ -1,6 +1,10 @@
+from unittest import result
+
 from src.embed import embed_text
 from src.pinecone_client import get_index
 from src.scorer import score_candidate
+from src.analyzer import analyze_candidate
+
 
 
 def retrieve_resumes(query: str, top_k: int = 5):
@@ -54,15 +58,22 @@ def rank_candidates(query, resumes):
 
     for file_name, resume_text in grouped_resumes.items():
 
-        score = score_candidate(query, resume_text)
+        sample = next(r for r in resumes if r["file_name"] == file_name)
+
+        result = analyze_candidate(query, resume_text[:1500])
+        
+        pinecone_score = sample.get("score", 0)
+
+        final_score = int(result["score"]) + int(pinecone_score * 10)
 
         ranked.append({
             "file_name": file_name,
-            "score": int(score),
-            "resume_text": resume_text
+            "score": final_score,
+            "highlights": result["highlights"],
+            "email": sample.get("email"),
+            "resume_link": sample.get("resume_link")
         })
 
     ranked.sort(key=lambda x: x["score"], reverse=True)
 
     return ranked
-

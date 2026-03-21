@@ -12,8 +12,10 @@ from src.pinecone_client import ensure_index, get_index
 
 print("🚀 FILE IS RUNNING")
 
+
 def run_pipeline():
     print("🚀 RUN PIPELINE STARTED")
+    
 
     ensure_index()
     index = get_index()
@@ -28,6 +30,8 @@ def run_pipeline():
         name = c["name"]
         email = c["email"]
         resume_link = c["resume_link"]
+        
+        print("DEBUG:", c)
 
         print("Processing:", name)
 
@@ -71,6 +75,7 @@ def run_pipeline():
             ])
 
         print("Indexed:", name)
+        
         
 if __name__ == "__main__":
     run_pipeline()
