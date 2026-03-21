@@ -36,8 +36,16 @@ def run_pipeline():
         if not file_bytes:
             print("Failed to fetch file")
             continue
+        
+        if not file_bytes.startswith(b"%PDF"):
+            print("⚠️ Invalid PDF format:", name)
+            continue
 
-        text = extract_text_from_pdf_bytes(file_bytes)
+        try:
+            text = extract_text_from_pdf_bytes(file_bytes)
+        except Exception as e:
+            print("❌ PDF parsing failed:", name, "| Error:", str(e))
+            continue
 
         if not text.strip():
             print("Empty text")
